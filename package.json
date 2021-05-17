@@ -17,7 +17,8 @@
     "react-native": "0.63.4",
     "react-native-gesture-handler": "^1.9.0",
     "react-native-reanimated": "2.1.0",
-    "react-native-web": "^0.15.5"
+    "react-native-web": "^0.15.5",
+    "realm": "^10.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",

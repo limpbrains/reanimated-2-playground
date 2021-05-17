@@ -1,44 +1,47 @@
-import Animated, {
-  useSharedValue,
-  withTiming,
-  useAnimatedStyle,
-  Easing,
-} from 'react-native-reanimated';
 import {View, Button} from 'react-native';
 import React from 'react';
+import Realm from 'realm';
+
+const TaskSchema = {
+  name: 'Task',
+  properties: {
+    _id: 'int',
+    name: 'string',
+    status: 'string?',
+  },
+  primaryKey: '_id',
+};
 
 export default function AnimatedStyleUpdateExample(props) {
-  const randomWidth = useSharedValue(10);
+  const handleWrite = async () => {
+    try {
+      const realm = await Realm.open({
+        path: 'myrealm',
+        schema: [TaskSchema],
+      });
 
-  const config = {
-    duration: 500,
-    easing: Easing.bezier(0.5, 0.01, 0, 1),
+      let task1, task2;
+      realm.write(() => {
+        task1 = realm.create('Task', {
+          _id: 1,
+          name: 'go grocery shopping',
+          status: 'Open',
+        });
+        task2 = realm.create('Task', {
+          _id: 2,
+          name: 'go exercise',
+          status: 'Open',
+        });
+        console.log(`created two tasks: ${task1.name} & ${task2.name}`);
+      });
+    } catch (e) {
+      console.error('EEEE', e);
+    }
   };
 
-  const style = useAnimatedStyle(() => {
-    return {
-      width: withTiming(randomWidth.value, config),
-    };
-  });
-
   return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: 'column',
-      }}>
-      <Animated.View
-        style={[
-          {width: 100, height: 80, backgroundColor: 'black', margin: 30},
-          style,
-        ]}
-      />
-      <Button
-        title="toggle"
-        onPress={() => {
-          randomWidth.value = Math.random() * 350;
-        }}
-      />
+    <View>
+      <Button title="write to realm" onPress={handleWrite} />
     </View>
   );
 }
